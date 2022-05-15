@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():
-    return 'This is the backend auth server for https://turtle84375.me!'
+def index():
+    return redirect('https://turtle84375.me')
 
 @app.route('/login', methods=['POST'])
 def login():
