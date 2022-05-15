@@ -4,6 +4,8 @@ import pymongo
 import os
 
 mongoURL = os.environ['db_url']
+bannedUsernames = os.environ['bannedUnames']
+bannedUsernames = bannedUsernames.split(',')
 
 app = Flask(__name__)
 
@@ -45,25 +47,28 @@ def register():
     pwrd = request.form['password']
     pwrd = hashlib.sha256(pwrd.encode('utf-8')).hexdigest()
 
-    query = { "username": user }
-    global unique
-    unique = True
-    for x in col.find(query):
-      unique = False
-
-    if unique:
-      data = {
-		    'username': user,
-			  'password': pwrd,
-			  'admin': False,
-			  'banned': False
-		  }
-
-      x = col.insert_one(data)
-      print(x)
-      return redirect('https://turtle84375.me/login?error=0')
+    if any(ext in user for ext in bannedUsernames):
+      return redirect('https://turtle84375.me/register?error=3')
     else:
-      return redirect('https://turtle84375.me/register?error=1')
+      query = { "username": user }
+      global unique
+      unique = True
+      for x in col.find(query):
+        unique = False
+
+      if unique:
+        data = {
+		      'username': user,
+			    'password': pwrd,
+			    'admin': False,
+			    'banned': False
+		    }
+
+        x = col.insert_one(data)
+        print(x)
+        return redirect('https://turtle84375.me/login?error=0')
+      else:
+        return redirect('https://turtle84375.me/register?error=1')
 
 @app.route('/api/ping', methods=['POST', 'GET'])
 def ping():
