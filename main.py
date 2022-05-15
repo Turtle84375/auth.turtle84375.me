@@ -64,6 +64,10 @@ def register():
       return redirect('https://turtle84375.me/login?error=0')
     else:
       return redirect('https://turtle84375.me/register?error=1')
+
+@app.route('/api/ping', methods=['POST', 'GET'])
+def ping():
+    return 'auth.turtle84375.me is up and running!'
 					 
 
 if __name__ == '__main__':
